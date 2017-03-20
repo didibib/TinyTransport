@@ -19,7 +19,13 @@ public class GameManager : MonoBehaviour {
 
     void Update() {
         for (int i = 0; i < Lines.ToRender.Count; i++) {
-            //Lines.ToRender.Values.ElementAt(i).AssignedDropZone.peopleDemands
+            Lines.ConnectionPoint cP = Lines.ToRender.Values.ElementAt(i);
+            if (!Lines.ToRender.Values.ElementAt(i).trackMouse && !cP.AssignedDropZone.peopleDemands.startDistributing) {
+                Debug.Log(cP.AssignedDropZone.peopleDemands.name);
+                float af = cP.myDraggable.amountFood;
+                int pt = cP.myDraggable.processTime;
+                cP.AssignedDropZone.peopleDemands.Distribute(true, af, pt);
+            }
         }
     }
 }

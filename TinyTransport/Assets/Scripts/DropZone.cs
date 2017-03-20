@@ -34,9 +34,6 @@ public class DropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
                     }
                 }
             }
-            //ConnectionPoint cP = Lines.ToRender[];
-            //cP.trackMouse = false;
-            //cP.
         }
     }
 
@@ -56,6 +53,7 @@ public class DropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
             if (typeOfSlot == Slot.LAND) {
                 d.parentToReturnTo = this.transform;
                 d.positionToReturnTo = eventData.position;
+                d.typeOfZone = Slot.LAND;
                 GameManager.gm.droppedOnThis = this;
                 Debug.Log("dropped on " + GameManager.gm.droppedOnThis);
             }            

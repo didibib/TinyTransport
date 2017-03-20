@@ -15,7 +15,7 @@ public class Lines : MonoBehaviour {
         public bool active;
         public bool trackMouse;
         public Vector3 endPoint;
-        private Draggable myDraggable;
+        public Draggable myDraggable;
         public DropZone AssignedDropZone;
 
         public Draggable MyDraggable

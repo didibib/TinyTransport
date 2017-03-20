@@ -11,11 +11,16 @@ public class AskDemand : MonoBehaviour {
     private float currentAmount;
     [SerializeField] [Range(0f, 1f)]
     private float speed;
-    private float amountFood;
+    [HideInInspector]
+    public bool startDistributing;
+    private float amountFood = 0;
+    private int procesTime = 0;
+    private float previousMillis = 0 ;
 
     void Start() {
         loadingBar.fillAmount = currentAmount;
         loadingBar.color = weAreFine;
+        startDistributing = false;
     }
 
     void Update() {
@@ -27,12 +32,19 @@ public class AskDemand : MonoBehaviour {
         }
         loadingBar.fillAmount = currentAmount;
 
-        if (Input.GetMouseButtonDown(0)) {
-            Distribute(0.1f);
-        }
+        if (startDistributing) {            
+            float currentMillies = Time.time;
+            if(currentMillies - previousMillis >= procesTime) {
+                previousMillis = currentMillies;
+                currentAmount += amountFood;
+            }
+        }        
 	}
 
-    void Distribute(float _amountFood) {
-        currentAmount += _amountFood;
+    public void Distribute(bool _startDistributing, float _amountFood, int _procesTime) {
+        startDistributing = _startDistributing;
+        amountFood = _amountFood;
+        procesTime = _procesTime;
+        Debug.Log("new demands: " + startDistributing + " " + amountFood + " " + procesTime);
     }
 }

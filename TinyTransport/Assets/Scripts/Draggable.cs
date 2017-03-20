@@ -6,6 +6,10 @@ using UnityEngine.UI;
 [RequireComponent(typeof(CanvasGroup))]
 public class Draggable : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler {
 
+    [Range(0.0f, 1.0f)]
+    public float amountFood;
+    public int processTime;
+
     [HideInInspector]
     public Transform parentToReturnTo = null;
     [HideInInspector]
@@ -13,24 +17,19 @@ public class Draggable : MonoBehaviour, IPointerClickHandler, IBeginDragHandler,
     [HideInInspector]
     public Transform placeholderParent = null;
     GameObject placeholder = null;
-
     [HideInInspector]
     public bool menuOpen = false;
-    public float timeToCancel = 2;
     private Vector3 mousePosMenu;
     [HideInInspector]
     public bool makingConnection = false;
-    public Material materialerial;
-    //[HideInInspector]
-    //public Lines TheLines;
     [HideInInspector]
-    public DropZone.Slot typeOfZone = DropZone.Slot.LAND;
+    public DropZone.Slot typeOfZone = DropZone.Slot.EMPTY;
     [HideInInspector]
     public bool changeZone = true;
 
     void Update() {
         if (Input.GetMouseButtonDown(1) && menuOpen) {
-            menuOpen = false;
+            //menuOpen = false;
         }
         if(changeZone == false)
         Debug.Log("change zone " + changeZone);
@@ -42,6 +41,8 @@ public class Draggable : MonoBehaviour, IPointerClickHandler, IBeginDragHandler,
             mousePosMenu = Input.mousePosition;
             Debug.Log("mousepos menu " + mousePosMenu);
         }
+        //if (typeOfZone == DropZone.Slot.LAND)
+        //    Debug.Log("mousePointerClick");
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
@@ -112,11 +113,6 @@ public class Draggable : MonoBehaviour, IPointerClickHandler, IBeginDragHandler,
                 makingConnection = true;
                 Debug.Log("making connection " + makingConnection);
                 menuOpen = false;
-            }
-        }
-        if (makingConnection && Input.GetMouseButtonDown(1)) {
-            if (GUI.Button(new Rect(mousePosMenu.x - Screen.width / 2, mousePosMenu.y * -1 + Screen.height / 2, 60, 30), "Cancel")) {
-                Debug.Log("canceling");
             }
         }
     }
