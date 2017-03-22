@@ -6,8 +6,9 @@ public class EnemyHealth : MonoBehaviour
 
     public int startingHealth = 3;
     public GameObject hitParticles;
-	public GameObject Item;
-	public Transform target;
+    public GameObject deathParticles;
+    public GameObject item;
+    public Transform target;
 
     private int currentHealth;
 
@@ -16,14 +17,22 @@ public class EnemyHealth : MonoBehaviour
         currentHealth = startingHealth;
     }
 
+    public void EatMais(int damage)
+    {
+        currentHealth -= damage;
+        Debug.Log("Health " + currentHealth);
+        if (currentHealth <= 0) {
+            Defeated();
+            ItemSpawn();
+        }
+    }
+
     public void Damage(int damage, Vector3 hitPoint)
     {
         Instantiate(hitParticles, hitPoint, Quaternion.identity);
         currentHealth -= damage;
-        if (currentHealth <= 0)
-        {
-            Defeated();
-			ItemSpawn ();
+        if (currentHealth == 0) {
+            Defeated();            
         }
     }
 
@@ -31,17 +40,14 @@ public class EnemyHealth : MonoBehaviour
     {
         GameManager.instance.lstCows.Remove(gameObject);
         GameManager.instance.AddScore(1);
-		Destroy (gameObject);
+        Instantiate(deathParticles, transform.position, transform.rotation);
+        Destroy(gameObject, .5f);
+        ItemSpawn();
     }
 
-	public void ItemSpawn()
-	{
-		GameObject clone;
-		clone = Instantiate (Item, transform.position, transform.rotation) as GameObject;
-	}
-
-	void Update()
-	{
-		
-	}
+    void ItemSpawn()
+    {
+        GameObject clone;
+        clone = Instantiate(item, transform.position, transform.rotation) as GameObject;
+    }
 }

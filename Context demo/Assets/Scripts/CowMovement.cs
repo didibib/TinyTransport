@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CowMovement : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class CowMovement : MonoBehaviour
     public float speed;
     UnityEngine.AI.NavMeshAgent agent;
     public Transform goal;
+    private List<GameObject> lstFood;
 
     [Header("Finite State Machine")]
     CowState state;
@@ -35,8 +37,21 @@ public class CowMovement : MonoBehaviour
             case (CowState.Moving):
                 agent.speed = speed;
                 break;
+            case (CowState.Eating):
+                CheckForFood();
+                break;
             case (CowState.Smelling):
                 break;
+        }
+    }
+
+    void CheckForFood()
+    {
+        lstFood = GameManager.instance.lstBullets;
+        for (int i = 0; i < lstFood.Count; i++) {
+            if(Vector3.Distance(lstFood[i].transform.position, transform.position) < 5) {
+
+            }
         }
     }
 
@@ -47,5 +62,5 @@ public class CowMovement : MonoBehaviour
         state = CowState.Moving;
     }
 
-    public enum CowState { Moving, Idle, Smelling }
+    public enum CowState { Moving, Idle, Eating, Smelling }
 }

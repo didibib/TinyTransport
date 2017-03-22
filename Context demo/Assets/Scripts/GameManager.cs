@@ -9,7 +9,11 @@ public class GameManager : MonoBehaviour
     public List<GameObject> lstMeat = new List<GameObject>();
     public List<GameObject> lstCows = new List<GameObject>();
     public List<GameObject> lstOrders = new List<GameObject>();
-    
+    public GameObject bullet;
+    public int pooledAmount = 100;
+    public List<GameObject> lstBullets = new List<GameObject>();
+    public List<string> lstOrdersTitles = new List<string>();
+
     public Text txtScore;
     int score;
     public Text txtDue;
@@ -28,15 +32,22 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
         DontDestroyOnLoad(gameObject);
+
+        for (int i = 0; i < pooledAmount; i++) {
+            GameObject obj = Instantiate(bullet);
+            obj.SetActive(false);
+            lstBullets.Add(obj);
+        }
     }
 
     void Start()
     {
-        score = 0;
+        score = 0;        
     }
 
     void Update()
     {
+        CleanUpParticles();
         UpdateText();
         ManageOrders();
         CreateOrder();
@@ -52,13 +63,20 @@ public class GameManager : MonoBehaviour
                 due = 0;
                 Destroy(lstOrders[i]);
                 lstOrders.Remove(lstOrders[i]);
-            } else if (due == lstOrders[0].GetComponent<Order>().amount){
+            } else if (due == lstOrders[0].GetComponent<Order>().amount) {
                 score += 1;
                 due = 0;
                 Destroy(lstOrders[i]);
                 lstOrders.Remove(lstOrders[i]);
+            } else if(lstOrders.Count == 0) {
+                due = 0;
             }
         }
+    }
+
+    void BulletsPool()
+    {
+
     }
 
     void CreateOrder()
@@ -66,10 +84,12 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space)) {
             GameObject newOrder = Instantiate(prefabOrder);
             newOrder.transform.parent = GameObject.Find("Canvas").transform;
-            float minTime = (lstOrders.Count != 0) ? lstOrders[0].GetComponent<Order>().timer : 0;
+            float minTime = (lstOrders.Count != 0) ? lstOrders[lstOrders.Count - 1].GetComponent<Order>().timer : 0;
+            int i = Random.Range(0, lstOrdersTitles.Count);
+            newOrder.GetComponent<Order>().txtDes.text = lstOrdersTitles[i];
             newOrder.GetComponent<Order>().timer = Random.Range(minTime + randomTime.x, randomTime.y);
             newOrder.GetComponent<Order>().amount = Random.Range((int)randomAmount.x, (int)randomAmount.y);
-            lstOrders.Add(newOrder);
+            lstOrders.Insert(0, newOrder);
         }
     }
 
@@ -83,5 +103,15 @@ public class GameManager : MonoBehaviour
     {
         txtScore.text = "Cows Killed " + score;
         txtDue.text = "Due " + due;
+    }
+
+    void CleanUpParticles()
+    {
+        GameObject[] AllGameObjects = Resources.FindObjectsOfTypeAll(typeof(GameObject)) as GameObject[];
+        for (int i = 0; i < AllGameObjects.Length; i++) {
+            if (AllGameObjects[i].name.Contains("Particle")) {
+                Destroy(AllGameObjects[i], 2);
+            }
+        }
     }
 }

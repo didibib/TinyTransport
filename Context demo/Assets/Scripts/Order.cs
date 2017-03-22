@@ -7,6 +7,7 @@ public class Order : MonoBehaviour {
 
     public Text txtTimer;
     public Text txtAmount;
+    public Text txtDes;
 
     [HideInInspector]
     public bool expire = false;
