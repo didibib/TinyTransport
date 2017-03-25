@@ -6,8 +6,10 @@ public class MeatCollecter : MonoBehaviour {
 
     void OnTriggerEnter(Collider col)
     {
-        if(col.gameObject.name == "FPSController") {
-            GameObject.FindWithTag("GM").GetComponent<GameManager>().lstMeat.Add(gameObject);
+        if(col.gameObject.tag == "Player") {
+            Debug.Log("added meat");
+            GameManager.instance.AddScore(1);
+            GameManager.instance.lstMeat.Add(gameObject);
         }
     }
 }

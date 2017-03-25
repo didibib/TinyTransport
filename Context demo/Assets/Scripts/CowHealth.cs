@@ -25,7 +25,7 @@ public class CowHealth : MonoBehaviour
     {
         transform.GetComponent<CowMovement>().AddFood(.1f);
         currentHealth -= damage;        
-        if (currentHealth <= 0) {
+        if (currentHealth == 0) {
             transform.GetComponent<CowMovement>().defeated = true;
             StartCoroutine(Defeated());
         } else if (currentHealth <= fatHealth) {
@@ -43,8 +43,7 @@ public class CowHealth : MonoBehaviour
 
     IEnumerator Defeated()
     {
-        GameManager.instance.lstCows.Remove(gameObject);
-        GameManager.instance.AddScore(1);
+        GameManager.instance.lstCows.Remove(gameObject);        
         Instantiate(deathParticles, transform.position + Vector3.up * 1.5f, transform.rotation);
         yield return new WaitForSeconds(.5f);
         gameObject.SetActive(false);

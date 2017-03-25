@@ -9,7 +9,8 @@ public class GunController : MonoBehaviour
     int clip;
     public int damage = 1;
     public Transform gunEnd;
-    public GameObject player;    
+    public GameObject player;
+    CameraShake camShake;
 
     private Camera fpsCam;
     private LineRenderer lineRenderer;
@@ -23,25 +24,29 @@ public class GunController : MonoBehaviour
         source = GetComponent<AudioSource>();
         fpsCam = GetComponentInParent<Camera>();
         clip = clipSize;
+        camShake = GameObject.FindGameObjectWithTag("GM").GetComponent<CameraShake>();
     }
 
     void Update()
     {
         Shooting();
         Ammunition();
-        //Debug.Log("Ammo " + ammo + " clip size " + clip);
     }
 
     void Ammunition()
     {
         List<GameObject> lstCow = GameManager.instance.lstCows;
+        List<GameObject> lstAmmoBuckets = GameManager.instance.lstAmmoBuckets;
         for (int i = 0; i < lstCow.Count; i++) {
-            if (lstCow[i] != null && Vector3.Distance(lstCow[i].transform.position, player.transform.position) < 2) {
-                ammo -= 1;
+            if(lstCow[i] != null && lstCow[i].GetComponent<CowMovement>().goal != null) {
+                if (lstCow[i] != null && Vector3.Distance(lstCow[i].transform.position, lstCow[i].GetComponent<CowMovement>().goal.transform.position) < 2) {
+                    ammo -= (int)Time.deltaTime;
+                    lstCow[i].GetComponent<CowMovement>().goal.GetComponent<BucketHealth>().AttackBucket();
+                }
             }
         }
-        if(ammo > 0) {
-            if(clip <= 0 || clip < clipSize) {
+        if (ammo > 0) {
+            if (clip <= 0 || clip < clipSize) {
                 Reloading();
             }
         }
@@ -50,10 +55,12 @@ public class GunController : MonoBehaviour
     void Shooting()
     {
         if (Input.GetMouseButton(0)) {
-            if(clip > 0) {
+            if (clip > 0) {
                 List<GameObject> bullets = GameManager.instance.lstBullets;
                 for (int i = 0; i < bullets.Count; i++) {
                     if (!bullets[i].activeInHierarchy) {
+                        GameManager.instance.BlastedMais(1);
+                        //camShake.Shake(0.1f, 0.1f);
                         bullets[i].transform.rotation = gunEnd.transform.rotation;
                         bullets[i].transform.position = Random.insideUnitSphere * .2f + gunEnd.transform.position;
                         bullets[i].SetActive(true);
@@ -62,7 +69,7 @@ public class GunController : MonoBehaviour
                         break;
                     }
                 }
-            }            
+            }
         }
     }
 
@@ -70,13 +77,13 @@ public class GunController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R)) {
             int newAmmo = clipSize - clip;
-            if(newAmmo > ammo) {
+            if (newAmmo > ammo) {
                 clip += ammo;
                 ammo = 0;
             } else {
                 clip += newAmmo;
                 ammo -= newAmmo;
-            }            
+            }
         }
     }
 

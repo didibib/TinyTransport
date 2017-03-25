@@ -9,7 +9,9 @@ public class CowMovement : MonoBehaviour
     public float speed;
     public float fatspeed;
     UnityEngine.AI.NavMeshAgent agent;
-    public Transform goal;
+    //public Transform player;
+    [HideInInspector]
+    public GameObject goal;
     private List<GameObject> lstFood;
 
     [Header("Finite State Machine")]
@@ -40,7 +42,9 @@ public class CowMovement : MonoBehaviour
 
     void Start()
     {
-        agent.destination = goal.position;
+        goal = GameManager.instance.lstAmmoBuckets[Random.Range(0, GameManager.instance.lstAmmoBuckets.Count)];
+        agent.destination = goal.transform.position;
+        Debug.Log(goal.transform.position);
         state = CowState.Idle;
         beingfat = defeated = false;
         timeEating = 0;
@@ -56,6 +60,19 @@ public class CowMovement : MonoBehaviour
 
     void Update()
     {
+        if (goal != null) {
+            if(Vector3.Distance(transform.position, goal.transform.position) < 2) {
+                timeEating = goal.GetComponent<BucketHealth>().health;
+                agent.speed = 0;
+                agent.transform.LookAt(goal.transform);
+            }
+        } else {
+            goal = GameManager.instance.lstAmmoBuckets[Random.Range(0, GameManager.instance.lstAmmoBuckets.Count)];
+            agent.destination = goal.transform.position;
+            agent.speed = speed;
+        }
+        Debug.Log(goal.name);
+
         PlayingSounds();
         HandleStates();
 
@@ -102,7 +119,7 @@ public class CowMovement : MonoBehaviour
     void PlayingSounds()
     {
         if (!bWalkingRoutine && (state == CowState.Walking || state == CowState.FatWalking)) {
-           
+
             StopRoutines();
             StartCoroutine(coWalking);
         } else if (!bEatingRoutine && state == CowState.Eating) {

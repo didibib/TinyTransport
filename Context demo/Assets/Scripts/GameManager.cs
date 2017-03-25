@@ -2,19 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance = null;
+
+    [Header("Lists")]
     public List<GameObject> lstMeat = new List<GameObject>();
     public List<GameObject> lstCows = new List<GameObject>();
-    public List<GameObject> lstOrders = new List<GameObject>();
+
+    [Header("Ammunition")]
     public GameObject bullet;
     public int pooledAmount = 100;
+    [HideInInspector]
     public List<GameObject> lstBullets = new List<GameObject>();
+    public List<GameObject> lstAmmoBuckets = new List<GameObject>();
+    public GameObject gun;
+    int ammo;
 
     [Header("Order")]
     public List<string> lstOrdersTitles = new List<string>();
+    public List<GameObject> lstOrders = new List<GameObject>();
     public GameObject prefabOrder;
     public Vector2 spawnWait;
     float newOrderWait;
@@ -23,8 +32,9 @@ public class GameManager : MonoBehaviour
     [Header("Score")]
     public Text txtScore;
     int score;
+    int maisblasted;
     public Text txtDue;
-    int due;    
+    int due;
 
     [Header("Values")]
     public Vector2 randomTime;
@@ -37,7 +47,7 @@ public class GameManager : MonoBehaviour
         } else if (instance != this) {
             Destroy(gameObject);
         }
-        //DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(gameObject);
 
         for (int i = 0; i < pooledAmount; i++) {
             GameObject obj = Instantiate(bullet);
@@ -48,16 +58,23 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        score = 0;
+        score = maisblasted = 0;
         StartCoroutine(CreateOrder());
+        ammo = gun.GetComponent<GunController>().ammo;
     }
 
     void Update()
     {
-        newOrderWait = Random.Range(spawnWait.x, spawnWait.y);
+        if (ammo != gun.GetComponent<GunController>().ammo)
+            ammo = gun.GetComponent<GunController>().ammo;
+        if (lstOrders.Count != 0)
+            newOrderWait = Random.Range(spawnWait.x, spawnWait.y);
+        else
+            newOrderWait = 1;
         //CleanUpParticles();
         UpdateText();
-        ManageOrders();        
+        ManageOrders();
+        EndGame();
     }
 
     void ManageOrders()
@@ -83,7 +100,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator CreateOrder()
     {
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(3);
         while (!stop) {
             GameObject newOrder = Instantiate(prefabOrder);
             newOrder.transform.parent = GameObject.Find("Canvas").transform;
@@ -94,7 +111,7 @@ public class GameManager : MonoBehaviour
             newOrder.GetComponent<Order>().amount = Random.Range((int)randomAmount.x, (int)randomAmount.y);
             lstOrders.Insert(0, newOrder);
             yield return new WaitForSeconds(newOrderWait);
-        }        
+        }
     }
 
     public void AddScore(int value)
@@ -103,10 +120,24 @@ public class GameManager : MonoBehaviour
         due += value;
     }
 
+    public void BlastedMais(int value)
+    {
+        maisblasted += value;
+    }
+
     void UpdateText()
     {
-        txtScore.text = "Cows Killed " + score;
+        txtScore.text = "Score " + score;
         txtDue.text = "Due " + due;
+    }
+
+    void EndGame()
+    {
+        if(ammo == 0) {
+            PlayerPrefs.SetInt("Meat", score);
+            PlayerPrefs.SetInt("Mais", maisblasted);
+            gameObject.GetComponent<LevelManager>().NextLevel();
+        }
     }
 
     void CleanUpParticles()

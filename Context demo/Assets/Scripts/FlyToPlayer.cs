@@ -9,7 +9,7 @@ public class FlyToPlayer : MonoBehaviour {
     public float flyTime;
 
 	void Start () {
-        player = GameObject.Find("FPSController");
+        player = GameObject.FindWithTag("Player");
         StartCoroutine(MoveObject(transform, transform.position, player.transform.position, flyTime));
     }
 
@@ -23,5 +23,7 @@ public class FlyToPlayer : MonoBehaviour {
             thisTransform.position = Vector3.Lerp(startPos, endPos, i);
             yield return 0;
         }
+        if (i >= 1.0)
+            gameObject.SetActive(false);
     }
 }

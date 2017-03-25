@@ -4,6 +4,8 @@ using System.Collections;
 public class CameraShake : MonoBehaviour {
 
     public Camera mainCam;
+    public GameObject crosshair;
+    public Transform stopPos;
     float shakeAmount = 0;
 
     void Awake()
@@ -33,13 +35,20 @@ public class CameraShake : MonoBehaviour {
             camPos.x += offsetX;
             camPos.y += offsetY;
 
-            mainCam.transform.position = camPos;
+            //mainCam.transform.position = camPos;
+
+            Vector3 chPos = crosshair.transform.position;
+            chPos.x += offsetX;
+            chPos.y += offsetY;
+
+            crosshair.transform.position = chPos;
         }
     }
 
     void StopShake()
     {
         CancelInvoke("DoShake");
-        mainCam.transform.localPosition = Vector3.zero;
+        //mainCam.transform.localPosition = Vector3.zero;
+        crosshair.transform.position = stopPos.position;
     }
 }
