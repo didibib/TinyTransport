@@ -5,53 +5,126 @@ using System.Collections.Generic;
 public class CowMovement : MonoBehaviour
 {
     [Header("Nav Mesh Agent")]
+
     public float speed;
+    public float fatspeed;
     UnityEngine.AI.NavMeshAgent agent;
     public Transform goal;
     private List<GameObject> lstFood;
 
     [Header("Finite State Machine")]
+
     CowState state;
     [Range(0.0f, 2.0f)]
     public float idleWaitTime;
+    private Animator animator;
+    [HideInInspector]
+    public float timeEating;
+    public GameObject eatParticles;
+    [HideInInspector]
+    public bool beingfat, defeated;
+
+    bool bWalkingRoutine, bEatingRoutine, bDeathRoutine = false;
+    IEnumerator coWalking, coEating, coDeath;
+    AudioSource source;
+    public AudioClip eatingSound;
+    public List<AudioClip> lstIdleSounds = new List<AudioClip>();
+    public List<AudioClip> lstDeathSounds = new List<AudioClip>();
+
+    void Awake()
+    {
+        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        animator = GetComponent<Animator>();
+        source = GetComponent<AudioSource>();
+    }
 
     void Start()
     {
-        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         agent.destination = goal.position;
         state = CowState.Idle;
+        beingfat = defeated = false;
+        timeEating = 0;
+        eatParticles.SetActive(false);
+
+        coWalking = PlayWalkingSound();
+        coEating = PlayEatingSound();
+        coDeath = PlayDeathSound();
+
+        source.clip = lstIdleSounds[Random.Range(0, lstIdleSounds.Count)];
+        source.Play();
     }
 
     void Update()
     {
-        HandleState();
+        PlayingSounds();
+        HandleStates();
+
+        animator.SetFloat("TimeEating", timeEating);
+        animator.SetBool("isFat", beingfat);
+        if (defeated) {
+            state = CowState.Defeated;
+        } else if (timeEating > 0)
+            state = CowState.Eating;
     }
 
-    public void HandleState()
+    public void HandleStates()
     {
-        switch (state)
-        {
+        switch (state) {
             case (CowState.Idle):
                 StartCoroutine(BeingIdle(idleWaitTime));
                 break;
-            case (CowState.Moving):
+            case (CowState.Walking):
+                bEatingRoutine = false;
                 agent.speed = speed;
                 break;
-            case (CowState.Eating):
-                CheckForFood();
+            case (CowState.FatWalking):
+                bEatingRoutine = false;
+                agent.speed = fatspeed;
                 break;
-            case (CowState.Smelling):
+            case (CowState.Eating):
+                bWalkingRoutine = false;
+                agent.speed = 0;
+                eatParticles.SetActive(true);
+                EatingFood();
+                break;
+            case (CowState.Defeated):
+                agent.speed = 0;
+                animator.SetBool("Defeated", defeated);
                 break;
         }
     }
 
-    void CheckForFood()
+    public void AddFood(float i)
     {
-        lstFood = GameManager.instance.lstBullets;
-        for (int i = 0; i < lstFood.Count; i++) {
-            if(Vector3.Distance(lstFood[i].transform.position, transform.position) < 5) {
+        timeEating += i;
+    }
 
-            }
+    void PlayingSounds()
+    {
+        if (!bWalkingRoutine && (state == CowState.Walking || state == CowState.FatWalking)) {
+           
+            StopRoutines();
+            StartCoroutine(coWalking);
+        } else if (!bEatingRoutine && state == CowState.Eating) {
+            StopRoutines();
+            StartCoroutine(coEating);
+        } else if (!bDeathRoutine && state == CowState.Defeated) {
+            StopRoutines();
+            StartCoroutine(coDeath);
+        }
+    }
+
+    void EatingFood()
+    {
+        if (timeEating <= 0) {
+            timeEating = 0;
+            eatParticles.SetActive(false);
+            if (!defeated) {
+                state = (beingfat) ? CowState.FatWalking : CowState.Walking;
+            } else
+                state = CowState.Defeated;
+        } else {
+            timeEating -= Time.deltaTime;
         }
     }
 
@@ -59,8 +132,50 @@ public class CowMovement : MonoBehaviour
     {
         agent.speed = 0;
         yield return new WaitForSeconds(waitTime);
-        state = CowState.Moving;
+        state = CowState.Walking;
     }
 
-    public enum CowState { Moving, Idle, Eating, Smelling }
+    IEnumerator PlayWalkingSound()
+    {
+        bWalkingRoutine = true;
+        //Debug.Log(bWalkingRoutine);
+        while (true) {
+            source.clip = lstIdleSounds[Random.Range(0, lstIdleSounds.Count)];
+            source.pitch = (beingfat) ? Random.Range(.8f, .9f) : Random.Range(.9f, 1.1f);
+            source.Play();
+            yield return new WaitForSeconds(source.clip.length);
+        }
+    }
+
+    IEnumerator PlayEatingSound()
+    {
+        bEatingRoutine = true;
+        while (true) {
+            source.clip = eatingSound;
+            source.pitch = Random.Range(.9f, 1.1f);
+            source.Play();
+            yield return new WaitForSeconds(source.clip.length);
+        }
+    }
+
+    IEnumerator PlayDeathSound()
+    {
+        bDeathRoutine = true;
+        while (true) {
+            source.clip = lstDeathSounds[Random.Range(0, lstDeathSounds.Count)];
+            source.pitch = Random.Range(1.1f, 1.3f);
+            source.Play();
+            yield return new WaitForSeconds(source.clip.length);
+        }
+    }
+
+    void StopRoutines()
+    {
+        source.Stop();
+        StopCoroutine(coWalking);
+        StopCoroutine(coEating);
+        StopCoroutine(coDeath);
+    }
+
+    public enum CowState { Walking, FatWalking, Idle, Eating, Defeated }
 }

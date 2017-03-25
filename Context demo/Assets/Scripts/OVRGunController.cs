@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OVRGunController : MonoBehaviour {
+public class OVRGunController : MonoBehaviour
+{
 
     [Header("Gun Settings")]
     public int ammo;
     public int clipSize;
-    public float fireRate = .25f;
-    public float range = 50;
-    public ParticleSystem smokeParticles;
-    public ParticleSystem hitParticles;
+    int clip;
     public int damage = 1;
 
     [Header("Gun Transform")]
@@ -26,32 +24,34 @@ public class OVRGunController : MonoBehaviour {
     private float nextFireTime;
 
     private Quaternion handRotation;
-    
+
     void Awake()
     {
         lineRenderer = GetComponent<LineRenderer>();
-        source = GetComponent<AudioSource>();        
+        source = GetComponent<AudioSource>();
     }
 
     void Start()
     {
         gun.transform.position = cam.transform.position;
-        gun.transform.rotation = cam.transform.rotation;
+        gun.transform.rotation = hand.transform.rotation;
+        clip = clipSize;
     }
 
     void Update()
     {
-        Debug.Log(handRotation.eulerAngles.x);
         handRotation = hand.transform.rotation;
         GunTransform();
         Shooting();
         Ammunition();
+        Reloading();
     }
 
     void GunTransform()
     {
         gun.transform.rotation = handRotation;
-        if(gun.transform.position != cam.transform.position)
+        Debug.Log(handRotation.eulerAngles.x);
+        if (gun.transform.position != cam.transform.position)
         {
             gun.transform.position = cam.transform.position;
         }
@@ -59,56 +59,67 @@ public class OVRGunController : MonoBehaviour {
 
     void Ammunition()
     {
-        List<GameObject> lstCow = GameObject.FindWithTag("GM").GetComponent<GameManager>().lstCows;
+        Debug.Log("ammo : " + ammo + " clip: " + clip);
+        List<GameObject> lstCow = GameManager.instance.lstCows;
         for (int i = 0; i < lstCow.Count; i++)
         {
-            if (lstCow[i] != null && Vector3.Distance(lstCow[i].transform.position, player.transform.position) < 5)
+            if (lstCow[i] != null && Vector3.Distance(lstCow[i].transform.position, player.transform.position) < 2)
             {
-                // Debug.Log("eating ammo");
-                // eat ammunition
+                ammo -= 1;
             }
-        }
-        if(handRotation.eulerAngles.x > 40)
-        {
-            Debug.Log("reloading");
         }
     }
 
     void Shooting()
     {
-        //Cast ray
-        RaycastHit hit;
-        Vector3 rayOrigin = gunEnd.transform.position;
-
-        if (OVRInput.Get(OVRInput.RawButton.LIndexTrigger) && Time.time > nextFireTime)
+        if (OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
         {
-            //Firerate
-            nextFireTime = Time.time + fireRate;
-
-            if (Physics.Raycast(rayOrigin, gunEnd.transform.forward, out hit, range))
+            if (clip > 0)
             {
-                //Cow health
-                EnemyHealth dmgScript = hit.collider.gameObject.GetComponent<EnemyHealth>();
-                if (dmgScript != null)
+                List<GameObject> bullets = GameManager.instance.lstBullets;
+                for (int i = 0; i < bullets.Count; i++)
                 {
-                    dmgScript.Damage(damage, hit.point);
+                    if (!bullets[i].activeInHierarchy)
+                    {
+                        bullets[i].transform.rotation = gunEnd.transform.rotation;
+                        bullets[i].transform.position = Random.insideUnitSphere * .2f + gunEnd.transform.position;
+                        bullets[i].SetActive(true);
+                        bullets[i].GetComponent<Rigidbody>().AddRelativeForce(Vector3.forward * 500);
+                        clip -= 1;
+                        break;
+                    }
                 }
-
-                //show particles
-                lineRenderer.SetPosition(0, gunEnd.position);
-                lineRenderer.SetPosition(1, hit.point);
-                Instantiate(hitParticles, hit.point, Quaternion.identity);
             }
-            StartCoroutine(ShotEffect());
+        }
+
+        if (OVRInput.Get(OVRInput.RawButton.RHandTrigger))
+        {
+            Debug.Log("handtrigger");
         }
     }
 
-    private IEnumerator ShotEffect()
+    void Reloading()
     {
-        lineRenderer.enabled = true;
-        source.Play();
-        smokeParticles.Play();
-        yield return shotLength;
-        lineRenderer.enabled = false;
+        if (handRotation.eulerAngles.x > 60 && handRotation.eulerAngles.x < 180)
+        {
+            Debug.Log("reloading");
+            if (ammo > 0)
+            {
+                if (clip <= 0 || clip < clipSize)
+                {
+                    int newAmmo = clipSize - clip;
+                    if (newAmmo > ammo)
+                    {
+                        clip += ammo;
+                        ammo = 0;
+                    }
+                    else
+                    {
+                        clip += newAmmo;
+                        ammo -= newAmmo;
+                    }
+                }
+            }            
+        }
     }
 }

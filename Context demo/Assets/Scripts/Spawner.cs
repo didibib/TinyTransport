@@ -35,7 +35,7 @@ public class Spawner : MonoBehaviour
 
             Vector3 spawnPosition = new Vector3(Random.Range(-spawnValues.x, spawnValues.x), 1, Random.Range(-spawnValues.z, spawnValues.z));
 
-            GameObject.FindWithTag("GM").GetComponent<GameManager>().lstCows.Add(Instantiate(enemies[randEnemy], spawnPosition + transform.TransformPoint(0, 0, 0), gameObject.transform.rotation));
+            GameManager.instance.lstCows.Add(Instantiate(enemies[randEnemy], spawnPosition + transform.TransformPoint(0, 0, 0), gameObject.transform.rotation));
 
             yield return new WaitForSeconds(spawnWait);
         }

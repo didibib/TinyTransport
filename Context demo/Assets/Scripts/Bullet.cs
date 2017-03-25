@@ -4,16 +4,13 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour {
 
-    public GameObject eatParticles;
     public int damage;
 
     void OnCollisionEnter(Collision col)
     {
         if (col.gameObject.tag == "Cow") {            
-            col.transform.GetComponent<EnemyHealth>().EatMais(damage);
-            Instantiate(eatParticles, transform.position, transform.rotation);
+            col.transform.GetComponent<CowHealth>().EatMais(damage);
             gameObject.SetActive(false);
-            //Destroy(gameObject);
         }
     }
 

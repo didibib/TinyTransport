@@ -12,13 +12,19 @@ public class GameManager : MonoBehaviour
     public GameObject bullet;
     public int pooledAmount = 100;
     public List<GameObject> lstBullets = new List<GameObject>();
-    public List<string> lstOrdersTitles = new List<string>();
 
+    [Header("Order")]
+    public List<string> lstOrdersTitles = new List<string>();
+    public GameObject prefabOrder;
+    public Vector2 spawnWait;
+    float newOrderWait;
+    public bool stop;
+
+    [Header("Score")]
     public Text txtScore;
     int score;
     public Text txtDue;
-    int due;
-    public GameObject prefabOrder;
+    int due;    
 
     [Header("Values")]
     public Vector2 randomTime;
@@ -31,7 +37,7 @@ public class GameManager : MonoBehaviour
         } else if (instance != this) {
             Destroy(gameObject);
         }
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
 
         for (int i = 0; i < pooledAmount; i++) {
             GameObject obj = Instantiate(bullet);
@@ -42,22 +48,23 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        score = 0;        
+        score = 0;
+        StartCoroutine(CreateOrder());
     }
 
     void Update()
     {
-        CleanUpParticles();
+        newOrderWait = Random.Range(spawnWait.x, spawnWait.y);
+        //CleanUpParticles();
         UpdateText();
-        ManageOrders();
-        CreateOrder();
+        ManageOrders();        
     }
 
     void ManageOrders()
     {
         for (int i = 0; i < lstOrders.Count; i++) {
             // POSITION
-            lstOrders[i].transform.position = new Vector2(i * 160 + 10, 25);
+            lstOrders[i].transform.position = new Vector2(i * 160 + 20, 25);
             // DUE DATE
             if (lstOrders[i].GetComponent<Order>().expire) {
                 due = 0;
@@ -68,20 +75,16 @@ public class GameManager : MonoBehaviour
                 due = 0;
                 Destroy(lstOrders[i]);
                 lstOrders.Remove(lstOrders[i]);
-            } else if(lstOrders.Count == 0) {
+            } else if (lstOrders.Count == 0) {
                 due = 0;
             }
         }
     }
 
-    void BulletsPool()
+    IEnumerator CreateOrder()
     {
-
-    }
-
-    void CreateOrder()
-    {
-        if (Input.GetKeyDown(KeyCode.Space)) {
+        yield return new WaitForSeconds(5);
+        while (!stop) {
             GameObject newOrder = Instantiate(prefabOrder);
             newOrder.transform.parent = GameObject.Find("Canvas").transform;
             float minTime = (lstOrders.Count != 0) ? lstOrders[lstOrders.Count - 1].GetComponent<Order>().timer : 0;
@@ -90,7 +93,8 @@ public class GameManager : MonoBehaviour
             newOrder.GetComponent<Order>().timer = Random.Range(minTime + randomTime.x, randomTime.y);
             newOrder.GetComponent<Order>().amount = Random.Range((int)randomAmount.x, (int)randomAmount.y);
             lstOrders.Insert(0, newOrder);
-        }
+            yield return new WaitForSeconds(newOrderWait);
+        }        
     }
 
     public void AddScore(int value)

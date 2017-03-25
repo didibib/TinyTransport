@@ -7,10 +7,6 @@ public class GunController : MonoBehaviour
     public int ammo;
     public int clipSize;
     int clip;
-    public float fireRate = .25f;
-    public float range = 50;    
-    public ParticleSystem smokeParticles;
-    public ParticleSystem hitParticles;
     public int damage = 1;
     public Transform gunEnd;
     public GameObject player;    
@@ -33,12 +29,12 @@ public class GunController : MonoBehaviour
     {
         Shooting();
         Ammunition();
-        Debug.Log("Ammo " + ammo + " clip size " + clip);
+        //Debug.Log("Ammo " + ammo + " clip size " + clip);
     }
 
     void Ammunition()
     {
-        List<GameObject> lstCow = GameObject.FindWithTag("GM").GetComponent<GameManager>().lstCows;
+        List<GameObject> lstCow = GameManager.instance.lstCows;
         for (int i = 0; i < lstCow.Count; i++) {
             if (lstCow[i] != null && Vector3.Distance(lstCow[i].transform.position, player.transform.position) < 2) {
                 ammo -= 1;
@@ -49,7 +45,6 @@ public class GunController : MonoBehaviour
                 Reloading();
             }
         }
-
     }
 
     void Shooting()
@@ -75,43 +70,39 @@ public class GunController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R)) {
             int newAmmo = clipSize - clip;
-            clip += newAmmo;
-            ammo -= newAmmo;
+            if(newAmmo > ammo) {
+                clip += ammo;
+                ammo = 0;
+            } else {
+                clip += newAmmo;
+                ammo -= newAmmo;
+            }            
         }
     }
 
-    void HitScan()
-    {
-        //Cast ray
-        RaycastHit hit;
-        Vector3 rayOrigin = fpsCam.ViewportToWorldPoint(new Vector3(.5f, .5f, 0));
+    //void HitScan()
+    //{
+    //    //Cast ray
+    //    RaycastHit hit;
+    //    Vector3 rayOrigin = fpsCam.ViewportToWorldPoint(new Vector3(.5f, .5f, 0));
 
-        if (Input.GetButtonDown("Fire1") && Time.time > nextFireTime) {
-            //Firerate
-            nextFireTime = Time.time + fireRate;
+    //    if (Input.GetButtonDown("Fire1") && Time.time > nextFireTime) {
+    //        //Firerate
+    //        nextFireTime = Time.time + fireRate;
 
-            if (Physics.Raycast(rayOrigin, fpsCam.transform.forward, out hit, range)) {
-                //Cow health
-                EnemyHealth dmgScript = hit.collider.gameObject.GetComponent<EnemyHealth>();
-                if (dmgScript != null) {
-                    dmgScript.Damage(damage, hit.point);
-                }
+    //        if (Physics.Raycast(rayOrigin, fpsCam.transform.forward, out hit, range)) {
+    //            //Cow health
+    //            EnemyHealth dmgScript = hit.collider.gameObject.GetComponent<EnemyHealth>();
+    //            if (dmgScript != null) {
+    //                dmgScript.EatMais(damage);
+    //            }
 
-                //show particles
-                lineRenderer.SetPosition(0, gunEnd.position);
-                lineRenderer.SetPosition(1, hit.point);
-                Instantiate(hitParticles, hit.point, Quaternion.identity);
-            }
-            StartCoroutine(ShotEffect());
-        }
-    }
-
-    private IEnumerator ShotEffect()
-    {
-        lineRenderer.enabled = true;
-        source.Play();
-        smokeParticles.Play();
-        yield return shotLength;
-        lineRenderer.enabled = false;
-    }
+    //            //show particles
+    //            lineRenderer.SetPosition(0, gunEnd.position);
+    //            lineRenderer.SetPosition(1, hit.point);
+    //            Instantiate(hitParticles, hit.point, Quaternion.identity);
+    //        }
+    //        StartCoroutine(ShotEffect());
+    //    }
+    //}
 }
