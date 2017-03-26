@@ -5,9 +5,9 @@ using System.Collections.Generic;
 public class CowMovement : MonoBehaviour
 {
     [Header("Nav Mesh Agent")]
-
     public float speed;
     public float fatspeed;
+    public bool goToPlayer = false;
     UnityEngine.AI.NavMeshAgent agent;
     //public Transform player;
     [HideInInspector]
@@ -15,7 +15,6 @@ public class CowMovement : MonoBehaviour
     private List<GameObject> lstFood;
 
     [Header("Finite State Machine")]
-
     CowState state;
     [Range(0.0f, 2.0f)]
     public float idleWaitTime;
@@ -26,6 +25,7 @@ public class CowMovement : MonoBehaviour
     [HideInInspector]
     public bool beingfat, defeated;
 
+    [Header("Sounds")]
     bool bWalkingRoutine, bEatingRoutine, bDeathRoutine = false;
     IEnumerator coWalking, coEating, coDeath;
     AudioSource source;
@@ -42,9 +42,13 @@ public class CowMovement : MonoBehaviour
 
     void Start()
     {
-        goal = GameManager.instance.lstAmmoBuckets[Random.Range(0, GameManager.instance.lstAmmoBuckets.Count)];
-        agent.destination = goal.transform.position;
-        Debug.Log(goal.transform.position);
+        if (!goToPlayer) {
+            goal = GameManager.instance.lstAmmoBuckets[Random.Range(0, GameManager.instance.lstAmmoBuckets.Count)];
+            agent.destination = goal.transform.position;
+        } else {
+            goal = GameObject.FindWithTag("Player");
+            agent.destination = goal.transform.position;
+        }
         state = CowState.Idle;
         beingfat = defeated = false;
         timeEating = 0;
@@ -60,18 +64,19 @@ public class CowMovement : MonoBehaviour
 
     void Update()
     {
-        if (goal != null) {
-            if(Vector3.Distance(transform.position, goal.transform.position) < 2) {
-                timeEating = goal.GetComponent<BucketHealth>().health;
-                agent.speed = 0;
-                agent.transform.LookAt(goal.transform);
+        if (!goToPlayer) {
+            if (goal != null) {
+                if (Vector3.Distance(transform.position, goal.transform.position) < 2) {
+                    timeEating = goal.GetComponent<BucketHealth>().health;
+                    agent.speed = 0;
+                    agent.transform.LookAt(goal.transform);
+                }
+            } else {
+                goal = GameManager.instance.lstAmmoBuckets[Random.Range(0, GameManager.instance.lstAmmoBuckets.Count)];
+                agent.destination = goal.transform.position;
+                agent.speed = speed;
             }
-        } else {
-            goal = GameManager.instance.lstAmmoBuckets[Random.Range(0, GameManager.instance.lstAmmoBuckets.Count)];
-            agent.destination = goal.transform.position;
-            agent.speed = speed;
-        }
-        Debug.Log(goal.name);
+        }        
 
         PlayingSounds();
         HandleStates();
