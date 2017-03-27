@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> lstBullets = new List<GameObject>();
     public List<GameObject> lstAmmoBuckets = new List<GameObject>();
     public GameObject gun;
-    int ammo;
+    int ammo, clip;
 
     [Header("Order")]
     public List<string> lstOrdersTitles = new List<string>();
@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
         } else if (instance != this) {
             Destroy(gameObject);
         }
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
 
         for (int i = 0; i < pooledAmount; i++) {
             GameObject obj = Instantiate(bullet);
@@ -61,6 +61,7 @@ public class GameManager : MonoBehaviour
         score = maisblasted = 0;
         StartCoroutine(CreateOrder());
         ammo = gun.GetComponent<GunController>().ammo;
+        clip = gun.GetComponent<GunController>().clip;
     }
 
     void Update()
@@ -103,7 +104,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(3);
         while (!stop) {
             GameObject newOrder = Instantiate(prefabOrder);
-            newOrder.transform.parent = GameObject.Find("Canvas").transform;
+            newOrder.transform.parent = GameObject.Find("Canvas Overlay").transform;
             float minTime = (lstOrders.Count != 0) ? lstOrders[lstOrders.Count - 1].GetComponent<Order>().timer : 0;
             int i = Random.Range(0, lstOrdersTitles.Count);
             newOrder.GetComponent<Order>().txtDes.text = lstOrdersTitles[i];
@@ -111,6 +112,22 @@ public class GameManager : MonoBehaviour
             newOrder.GetComponent<Order>().amount = Random.Range((int)randomAmount.x, (int)randomAmount.y);
             lstOrders.Insert(0, newOrder);
             yield return new WaitForSeconds(newOrderWait);
+        }
+    }
+
+    public void AttackBuckets(int value)
+    {
+        float newValue = value;
+        for(int i = 0; i < lstAmmoBuckets.Count; i++) {
+            BucketHealth bh = lstAmmoBuckets[i].GetComponent<BucketHealth>();
+            float health = bh.health;
+            if(health - newValue <= 0) {
+                newValue = (health - newValue) * -1;
+                bh.AttackBucket(value);
+            } else {
+                bh.AttackBucket(value);
+                break;
+            }
         }
     }
 
@@ -133,7 +150,7 @@ public class GameManager : MonoBehaviour
 
     void EndGame()
     {
-        if(ammo == 0) {
+        if(ammo == 0 && clip == 0) {
             PlayerPrefs.SetInt("Meat", score);
             PlayerPrefs.SetInt("Mais", maisblasted);
             gameObject.GetComponent<LevelManager>().NextLevel();

@@ -11,12 +11,24 @@ public class BucketHealth : MonoBehaviour {
 	void Start () {
         ammo = gun.GetComponent<GunController>().ammo;
         health = ammo / GameManager.instance.lstAmmoBuckets.Count;
+        Debug.Log("bucket health " + health);
     }
 	
 	public void AttackBucket()
     {
         health -= Time.deltaTime;
-        if(health <= 0) {
+        Debug.Log("bucket health " + health);
+        if (health <= 0) {
+            GameManager.instance.lstAmmoBuckets.Remove(gameObject);
+            Destroy(gameObject);
+        }
+    }
+
+    public void AttackBucket(int value)
+    {
+        health -= value;
+        Debug.Log("bucket health " + health);
+        if (health <= 0) {
             GameManager.instance.lstAmmoBuckets.Remove(gameObject);
             Destroy(gameObject);
         }

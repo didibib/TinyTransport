@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,8 +7,11 @@ public class GunController : MonoBehaviour
 {
     public int ammo;
     public int clipSize;
-    int clip;
-    public int damage = 1;
+    [HideInInspector]
+    public int clip;
+    public Image clipBar;
+    float pct;
+    //public int damage = 1;
     public Transform gunEnd;
     public GameObject player;
     CameraShake camShake;
@@ -23,14 +27,20 @@ public class GunController : MonoBehaviour
         lineRenderer = GetComponent<LineRenderer>();
         source = GetComponent<AudioSource>();
         fpsCam = GetComponentInParent<Camera>();
-        clip = clipSize;
         camShake = GameObject.FindGameObjectWithTag("GM").GetComponent<CameraShake>();
+    }
+
+    void Start()
+    {
+        clip = clipSize;
+        pct = 1.0f / clipSize;
     }
 
     void Update()
     {
         Shooting();
         Ammunition();
+        //Debug.Log("ammo " + ammo + " clip " + clip);
     }
 
     void Ammunition()
@@ -38,7 +48,7 @@ public class GunController : MonoBehaviour
         List<GameObject> lstCow = GameManager.instance.lstCows;
         List<GameObject> lstAmmoBuckets = GameManager.instance.lstAmmoBuckets;
         for (int i = 0; i < lstCow.Count; i++) {
-            if(lstCow[i] != null && lstCow[i].GetComponent<CowMovement>().goal != null) {
+            if (lstCow[i] != null && lstCow[i].GetComponent<CowMovement>().goal != null) {
                 if (lstCow[i] != null && Vector3.Distance(lstCow[i].transform.position, lstCow[i].GetComponent<CowMovement>().goal.transform.position) < 2) {
                     ammo -= (int)Time.deltaTime;
                     lstCow[i].GetComponent<CowMovement>().goal.GetComponent<BucketHealth>().AttackBucket();
@@ -66,6 +76,7 @@ public class GunController : MonoBehaviour
                         bullets[i].SetActive(true);
                         bullets[i].GetComponent<Rigidbody>().AddRelativeForce(Vector3.forward * 500);
                         clip -= 1;
+                        clipBar.fillAmount -= pct;
                         break;
                     }
                 }
@@ -76,13 +87,20 @@ public class GunController : MonoBehaviour
     void Reloading()
     {
         if (Input.GetKeyDown(KeyCode.R)) {
+            int r = Random.Range(0, GameManager.instance.lstAmmoBuckets.Count);
+            Debug.Log("r " + r);
+            Debug.Log("ammo " + ammo + " clip " + clip);
             int newAmmo = clipSize - clip;
             if (newAmmo > ammo) {
                 clip += ammo;
                 ammo = 0;
+                clipBar.fillAmount = (float)clip / clipSize;
+                GameManager.instance.AttackBuckets(newAmmo);
             } else {
                 clip += newAmmo;
                 ammo -= newAmmo;
+                clipBar.fillAmount = 1;
+                GameManager.instance.AttackBuckets(newAmmo);
             }
         }
     }
