@@ -5,24 +5,24 @@ using UnityEngine.UI;
 
 public class EndGame : MonoBehaviour {
 
-    public Text txtScore;
-    int score;
+    public Text txtMeatCollected;
+    int meatCollected;
     public Text txtFood;
     int food;
 
 	void Start () {
-        score = 0;// PlayerPrefs.GetInt("Meat");
+        meatCollected = 0;// PlayerPrefs.GetInt("Meat");
         food = 0; // PlayerPrefs.GetInt("Mais");
 	}
 	
 	void Update () {
-        if(score != PlayerPrefs.GetInt("Meat")) {
-            score += 1;
+        if (meatCollected != PlayerPrefs.GetInt("Meat")) {
+            meatCollected += 1;
         }
-        if (food != PlayerPrefs.GetInt("Mais")) {
-            food += 1;
+        if (food != meatCollected * 25) {
+            food += 25;
         }
-        txtScore.text = "Meat Collected " + score;
-        txtFood.text = "Food Blasted " + food;
+        txtMeatCollected.text = "Meat Collected " + meatCollected + " Kg";
+        txtFood.text = "Food Blasted " + food + " Kg";
 	}
 }

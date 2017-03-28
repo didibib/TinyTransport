@@ -10,6 +10,7 @@ public class GunController : MonoBehaviour
     [HideInInspector]
     public int clip;
     public Image clipBar;
+    public int force;
     float pct;
     //public int damage = 1;
     public Transform gunEnd;
@@ -74,7 +75,7 @@ public class GunController : MonoBehaviour
                         bullets[i].transform.rotation = gunEnd.transform.rotation;
                         bullets[i].transform.position = Random.insideUnitSphere * .2f + gunEnd.transform.position;
                         bullets[i].SetActive(true);
-                        bullets[i].GetComponent<Rigidbody>().AddRelativeForce(Vector3.forward * 500);
+                        bullets[i].GetComponent<Rigidbody>().AddRelativeForce(Vector3.forward * force);
                         clip -= 1;
                         clipBar.fillAmount -= pct;
                         break;

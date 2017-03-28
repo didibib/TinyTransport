@@ -23,6 +23,7 @@ public class CowHealth : MonoBehaviour
 
     public void EatMais(int damage)
     {
+        Debug.Log("hitting cow");
         transform.GetComponent<CowMovement>().AddFood(.1f);
         currentHealth -= damage;        
         if (currentHealth == 0) {
@@ -48,12 +49,12 @@ public class CowHealth : MonoBehaviour
         yield return new WaitForSeconds(.5f);
         gameObject.SetActive(false);
         ItemSpawn();
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 
     void ItemSpawn()
     {
         GameObject clone;
-        clone = Instantiate(item, transform.position, transform.rotation) as GameObject;
+        clone = Instantiate(item, transform.position + Vector3.up * 1.5f, transform.rotation) as GameObject;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class OVRGunController : MonoBehaviour
 {
@@ -8,19 +9,21 @@ public class OVRGunController : MonoBehaviour
     [Header("Gun Settings")]
     public int ammo;
     public int clipSize;
-    int clip;
+    [HideInInspector]
+    public int clip;
+    public Image clipBar;
     public int damage = 1;
+    public int force;
+    float pct;
 
     [Header("Gun Transform")]
     public Transform gunEnd;
-    public GameObject player;
     public GameObject cam;
     public GameObject gun;
-    public GameObject hand;
 
     private LineRenderer lineRenderer;
     private WaitForSeconds shotLength = new WaitForSeconds(.07f);
-    private AudioSource source;
+    //private AudioSource source;
     private float nextFireTime;
 
     private Quaternion handRotation;
@@ -28,19 +31,20 @@ public class OVRGunController : MonoBehaviour
     void Awake()
     {
         lineRenderer = GetComponent<LineRenderer>();
-        source = GetComponent<AudioSource>();
+        //source = GetComponent<AudioSource>();
     }
 
     void Start()
     {
         gun.transform.position = cam.transform.position;
-        gun.transform.rotation = hand.transform.rotation;
+        gun.transform.rotation = OVRInput.GetLocalControllerRotation(OVRInput.GetActiveController());
         clip = clipSize;
+        pct = 1.0f / clipSize;
     }
 
     void Update()
     {
-        handRotation = hand.transform.rotation;
+        handRotation = OVRInput.GetLocalControllerRotation(OVRInput.GetActiveController());
         GunTransform();
         Shooting();
         Ammunition();
@@ -59,13 +63,17 @@ public class OVRGunController : MonoBehaviour
 
     void Ammunition()
     {
-        Debug.Log("ammo : " + ammo + " clip: " + clip);
         List<GameObject> lstCow = GameManager.instance.lstCows;
+        List<GameObject> lstAmmoBuckets = GameManager.instance.lstAmmoBuckets;
         for (int i = 0; i < lstCow.Count; i++)
         {
-            if (lstCow[i] != null && Vector3.Distance(lstCow[i].transform.position, player.transform.position) < 2)
+            if (lstCow[i] != null && lstCow[i].GetComponent<CowMovement>().goal != null)
             {
-                ammo -= 1;
+                if (lstCow[i] != null && Vector3.Distance(lstCow[i].transform.position, lstCow[i].GetComponent<CowMovement>().goal.transform.position) < 2)
+                {
+                    ammo -= (int)Time.deltaTime;
+                    lstCow[i].GetComponent<CowMovement>().goal.GetComponent<BucketHealth>().AttackBucket();
+                }
             }
         }
     }
@@ -81,11 +89,13 @@ public class OVRGunController : MonoBehaviour
                 {
                     if (!bullets[i].activeInHierarchy)
                     {
+                        GameManager.instance.BlastedMais(1);
                         bullets[i].transform.rotation = gunEnd.transform.rotation;
                         bullets[i].transform.position = Random.insideUnitSphere * .2f + gunEnd.transform.position;
                         bullets[i].SetActive(true);
                         bullets[i].GetComponent<Rigidbody>().AddRelativeForce(Vector3.forward * 500);
                         clip -= 1;
+                        clipBar.fillAmount -= pct;
                         break;
                     }
                 }
@@ -102,7 +112,8 @@ public class OVRGunController : MonoBehaviour
     {
         if (handRotation.eulerAngles.x > 60 && handRotation.eulerAngles.x < 180)
         {
-            Debug.Log("reloading");
+            int r = Random.Range(0, GameManager.instance.lstAmmoBuckets.Count);
+            //Debug.Log("reloading");
             if (ammo > 0)
             {
                 if (clip <= 0 || clip < clipSize)
@@ -112,11 +123,15 @@ public class OVRGunController : MonoBehaviour
                     {
                         clip += ammo;
                         ammo = 0;
+                        clipBar.fillAmount = (float)clip / clipSize;
+                        GameManager.instance.AttackBuckets(newAmmo);
                     }
                     else
                     {
                         clip += newAmmo;
                         ammo -= newAmmo;
+                        clipBar.fillAmount = 1;
+                        GameManager.instance.AttackBuckets(newAmmo);
                     }
                 }
             }            

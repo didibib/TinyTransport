@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Ammunition")]
     public GameObject bullet;
-    public int pooledAmount = 100;
+    public int pooledAmountBullets = 100;
     [HideInInspector]
     public List<GameObject> lstBullets = new List<GameObject>();
     public List<GameObject> lstAmmoBuckets = new List<GameObject>();
@@ -28,46 +28,71 @@ public class GameManager : MonoBehaviour
     public Vector2 spawnWait;
     float newOrderWait;
     public bool stop;
+    public int maxOrders;
+    int amtOrders;
+    int ordersCompleted;
 
-    [Header("Score")]
-    public Text txtScore;
-    int score;
+    [Header("Order Values")]
+    public Vector2 randomTime;
+    public Vector2 randomAmount;
+
+    [Header("Cows")]
+    public GameObject cowWhite;
+    public GameObject cowBlack;
+    public int pooledAmountCows = 100;
+
+    [Header("meatCollected")]
+    public Text txtmeatCollected;
+    int meatCollected;
     int maisblasted;
     public Text txtDue;
     int due;
 
-    [Header("Values")]
-    public Vector2 randomTime;
-    public Vector2 randomAmount;
-
     void Awake()
     {
-        if (instance == null) {
+        if (instance == null)
+        {
             instance = this;
-        } else if (instance != this) {
+        }
+        else if (instance != this)
+        {
             Destroy(gameObject);
         }
         //DontDestroyOnLoad(gameObject);
 
-        for (int i = 0; i < pooledAmount; i++) {
+        for (int i = 0; i < pooledAmountBullets; i++)
+        {
             GameObject obj = Instantiate(bullet);
             obj.SetActive(false);
             lstBullets.Add(obj);
+        }
+
+        for (int i = 0; i < pooledAmountCows; i++)
+        {
+            GameObject obj;
+            if (i % 2 == 0)
+                obj = Instantiate(cowWhite);
+            else
+                obj = Instantiate(cowBlack);
+            obj.SetActive(false);
+            lstCows.Add(obj);
         }
     }
 
     void Start()
     {
-        score = maisblasted = 0;
+        meatCollected = maisblasted = amtOrders = 0;
         StartCoroutine(CreateOrder());
-        ammo = gun.GetComponent<GunController>().ammo;
-        clip = gun.GetComponent<GunController>().clip;
+        ammo = gun.GetComponent<OVRGunController>().ammo;
+        clip = gun.GetComponent<OVRGunController>().clip;
     }
 
     void Update()
     {
-        if (ammo != gun.GetComponent<GunController>().ammo)
-            ammo = gun.GetComponent<GunController>().ammo;
+        if (ammo != gun.GetComponent<OVRGunController>().ammo)
+            ammo = gun.GetComponent<OVRGunController>().ammo;
+        if (clip != gun.GetComponent<OVRGunController>().clip)
+            clip = gun.GetComponent<OVRGunController>().clip;
         if (lstOrders.Count != 0)
             newOrderWait = Random.Range(spawnWait.x, spawnWait.y);
         else
@@ -80,20 +105,28 @@ public class GameManager : MonoBehaviour
 
     void ManageOrders()
     {
-        for (int i = 0; i < lstOrders.Count; i++) {
+        for (int i = 0; i < lstOrders.Count; i++)
+        {
             // POSITION
-            lstOrders[i].transform.position = new Vector2(i * 160 + 20, 25);
+            lstOrders[i].transform.position = new Vector2(i * 180 + 60, 25);
             // DUE DATE
-            if (lstOrders[i].GetComponent<Order>().expire) {
+            if (lstOrders[i].GetComponent<Order>().expire)
+            {
                 due = 0;
                 Destroy(lstOrders[i]);
                 lstOrders.Remove(lstOrders[i]);
-            } else if (due == lstOrders[0].GetComponent<Order>().amount) {
-                score += 1;
+                amtOrders -= 1;
+            }
+            else if (due == lstOrders[0].GetComponent<Order>().amount)
+            {
+                meatCollected += 1;
                 due = 0;
                 Destroy(lstOrders[i]);
                 lstOrders.Remove(lstOrders[i]);
-            } else if (lstOrders.Count == 0) {
+                amtOrders -= 1;
+            }
+            else if (lstOrders.Count == 0)
+            {
                 due = 0;
             }
         }
@@ -101,8 +134,9 @@ public class GameManager : MonoBehaviour
 
     IEnumerator CreateOrder()
     {
-        yield return new WaitForSeconds(3);
-        while (!stop) {
+        yield return new WaitForSeconds(20);
+        while (!stop && amtOrders < 4)
+        {
             GameObject newOrder = Instantiate(prefabOrder);
             newOrder.transform.parent = GameObject.Find("Canvas Overlay").transform;
             float minTime = (lstOrders.Count != 0) ? lstOrders[lstOrders.Count - 1].GetComponent<Order>().timer : 0;
@@ -111,6 +145,7 @@ public class GameManager : MonoBehaviour
             newOrder.GetComponent<Order>().timer = Random.Range(minTime + randomTime.x, randomTime.y);
             newOrder.GetComponent<Order>().amount = Random.Range((int)randomAmount.x, (int)randomAmount.y);
             lstOrders.Insert(0, newOrder);
+            amtOrders += 1;
             yield return new WaitForSeconds(newOrderWait);
         }
     }
@@ -118,13 +153,17 @@ public class GameManager : MonoBehaviour
     public void AttackBuckets(int value)
     {
         float newValue = value;
-        for(int i = 0; i < lstAmmoBuckets.Count; i++) {
+        for (int i = 0; i < lstAmmoBuckets.Count; i++)
+        {
             BucketHealth bh = lstAmmoBuckets[i].GetComponent<BucketHealth>();
             float health = bh.health;
-            if(health - newValue <= 0) {
+            if (health - newValue <= 0)
+            {
                 newValue = (health - newValue) * -1;
                 bh.AttackBucket(value);
-            } else {
+            }
+            else
+            {
                 bh.AttackBucket(value);
                 break;
             }
@@ -133,7 +172,7 @@ public class GameManager : MonoBehaviour
 
     public void AddScore(int value)
     {
-        //score += value;
+        meatCollected += value;
         due += value;
     }
 
@@ -144,24 +183,28 @@ public class GameManager : MonoBehaviour
 
     void UpdateText()
     {
-        txtScore.text = "Score " + score;
+        txtmeatCollected.text = "meatCollected " + meatCollected;
         txtDue.text = "Due " + due;
     }
 
     void EndGame()
     {
-        if(ammo == 0 && clip == 0) {
-            PlayerPrefs.SetInt("Meat", score);
+        if (ammo <= 0 && clip <= 0)
+        {
+            PlayerPrefs.SetInt("Meat", meatCollected);
             PlayerPrefs.SetInt("Mais", maisblasted);
             gameObject.GetComponent<LevelManager>().NextLevel();
+            Debug.Log("endgame");
         }
     }
 
     void CleanUpParticles()
     {
         GameObject[] AllGameObjects = Resources.FindObjectsOfTypeAll(typeof(GameObject)) as GameObject[];
-        for (int i = 0; i < AllGameObjects.Length; i++) {
-            if (AllGameObjects[i].name.Contains("Particle")) {
+        for (int i = 0; i < AllGameObjects.Length; i++)
+        {
+            if (AllGameObjects[i].name.Contains("Particle"))
+            {
                 Destroy(AllGameObjects[i], 2);
             }
         }
