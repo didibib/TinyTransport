@@ -1,0 +1,172 @@
+fileFormatVersion: 2
+guid: 7434577984a52604eb4bbd3d6ea2e5a7
+timeCreated: 1500590319
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: slice
+    100004: slice1
+    100006: slice10
+    100008: slice11
+    100010: slice12
+    100012: slice13
+    100014: slice14
+    100016: slice15
+    100018: slice16
+    100020: slice17
+    100022: slice18
+    100024: slice2
+    100026: slice3
+    100028: slice4
+    100030: slice5
+    100032: slice6
+    100034: slice7
+    100036: slice8
+    100038: slice9
+    400000: //RootNode
+    400002: slice
+    400004: slice1
+    400006: slice10
+    400008: slice11
+    400010: slice12
+    400012: slice13
+    400014: slice14
+    400016: slice15
+    400018: slice16
+    400020: slice17
+    400022: slice18
+    400024: slice2
+    400026: slice3
+    400028: slice4
+    400030: slice5
+    400032: slice6
+    400034: slice7
+    400036: slice8
+    400038: slice9
+    2300000: slice
+    2300002: slice1
+    2300004: slice10
+    2300006: slice11
+    2300008: slice12
+    2300010: slice13
+    2300012: slice14
+    2300014: slice15
+    2300016: slice16
+    2300018: slice17
+    2300020: slice18
+    2300022: slice2
+    2300024: slice3
+    2300026: slice4
+    2300028: slice5
+    2300030: slice6
+    2300032: slice7
+    2300034: slice8
+    2300036: slice9
+    3300000: slice
+    3300002: slice1
+    3300004: slice10
+    3300006: slice11
+    3300008: slice12
+    3300010: slice13
+    3300012: slice14
+    3300014: slice15
+    3300016: slice16
+    3300018: slice17
+    3300020: slice18
+    3300022: slice2
+    3300024: slice3
+    3300026: slice4
+    3300028: slice5
+    3300030: slice6
+    3300032: slice7
+    3300034: slice8
+    3300036: slice9
+    4300000: slice18
+    4300002: slice17
+    4300004: slice16
+    4300006: slice15
+    4300008: slice14
+    4300010: slice13
+    4300012: slice12
+    4300014: slice11
+    4300016: slice10
+    4300018: slice9
+    4300020: slice8
+    4300022: slice7
+    4300024: slice6
+    4300026: slice5
+    4300028: slice4
+    4300030: slice3
+    4300032: slice2
+    4300034: slice1
+    4300036: slice
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 50
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
