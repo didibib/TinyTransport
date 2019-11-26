@@ -1,0 +1,107 @@
+Initialize engine version: 5.6.2f1 (a2913c821e27)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: NVIDIA GeForce GTX 960M (ID=0x139b)
+    Vendor:   NVIDIA
+    VRAM:     2019 MB
+    Driver:   22.21.13.8253
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\Tariq Bakhtali\Documents\HKU\Project Context Living Lab\LivingLab\Builds\alpha01_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\Tariq Bakhtali\Documents\HKU\Project Context Living Lab\LivingLab\Builds\alpha01_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\Tariq Bakhtali\Documents\HKU\Project Context Living Lab\LivingLab\Builds\alpha01_Data\Managed\Assembly-CSharp-firstpass.dll (this message is harmless)
+Loading C:\Users\Tariq Bakhtali\Documents\HKU\Project Context Living Lab\LivingLab\Builds\alpha01_Data\Managed\Assembly-CSharp-firstpass.dll into Unity Child Domain
+Platform assembly: C:\Users\Tariq Bakhtali\Documents\HKU\Project Context Living Lab\LivingLab\Builds\alpha01_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\Tariq Bakhtali\Documents\HKU\Project Context Living Lab\LivingLab\Builds\alpha01_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\Tariq Bakhtali\Documents\HKU\Project Context Living Lab\LivingLab\Builds\alpha01_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\Tariq Bakhtali\Documents\HKU\Project Context Living Lab\LivingLab\Builds\alpha01_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\Users\Tariq Bakhtali\Documents\HKU\Project Context Living Lab\LivingLab\Builds\alpha01_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\Tariq Bakhtali\Documents\HKU\Project Context Living Lab\LivingLab\Builds\alpha01_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\Users\Tariq Bakhtali\Documents\HKU\Project Context Living Lab\LivingLab\Builds\alpha01_Data\Managed\UnityEngine.VR.dll (this message is harmless)
+Loading C:\Users\Tariq Bakhtali\Documents\HKU\Project Context Living Lab\LivingLab\Builds\alpha01_Data\Managed\UnityEngine.VR.dll into Unity Child Domain
+- Completed reload, in  0.317 seconds
+Platform assembly: C:\Users\Tariq Bakhtali\Documents\HKU\Project Context Living Lab\LivingLab\Builds\alpha01_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\Tariq Bakhtali\Documents\HKU\Project Context Living Lab\LivingLab\Builds\alpha01_Data\Managed\System.dll (this message is harmless)
+desktop: 1920x1080 59Hz; virtual: 1920x1080 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 1.067419 ms
+ArgumentException: The Object you want to instantiate is null.
+  at UnityEngine.Object.CheckNullArgument (System.Object arg, System.String message) [0x00000] in <filename unknown>:0 
+  at UnityEngine.Object.Instantiate[GameObject] (UnityEngine.GameObject original) [0x00000] in <filename unknown>:0 
+  at GameManager.Awake () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at BucketHealth.Start () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at BucketHealth.Start () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at BucketHealth.Start () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at BucketHealth.Start () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at BucketHealth.Start () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at BucketHealth.Start () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at BucketHealth.Start () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at BucketHealth.Start () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at BucketHealth.Start () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at BucketHealth.Start () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at BucketHealth.Start () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at BucketHealth.Start () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+Setting up 4 worker threads for Enlighten.
+  Thread -> id: 1d60 -> priority: 1 
+  Thread -> id: 171c -> priority: 1 
+  Thread -> id: 2370 -> priority: 1 
+  Thread -> id: 20f0 -> priority: 1 
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 7.715504 ms
+
+Unloading 32 unused Assets to reduce memory usage. Loaded Objects now: 17206.
+Total: 6.044107 ms (FindLiveObjects: 0.557000 ms CreateObjectMapping: 0.078951 ms MarkObjects: 1.659159 ms  DeleteObjects: 3.748996 ms)
+
